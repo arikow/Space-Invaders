@@ -15,7 +15,6 @@ class Shield():
     def draw(self, stdscr):
         line='###'
         strong_line = '@@@'
-        
         lvl = 0
         endu = self._endurance
         double_life = self._endurance - 4
@@ -31,6 +30,6 @@ class Shield():
                 formated_line = (2-lvl)*' ' + f_line + 2*lvl*f_char + '\n'
             else:
                 formated_line = (2-help_lvl)*' ' + f_line + 2*help_lvl*f_char + '\n'
-            body += formated_line
+            stdscr.addstr(self.cordinates()[0]+lvl, self.cordinates()[1], formated_line)
             lvl+=1
-        return stdscr.addstr(*self.cordinates(), body)
+
