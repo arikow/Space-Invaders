@@ -1,9 +1,6 @@
 import curses
+from screen_logic import *
 
-
-def count_middle_scr(stdscr):
-    my, mx = stdscr.getmaxyx()
-    return my//2, mx//2
 
 def set_position(key, pos, len):
     if key == curses.KEY_UP and pos>0:
@@ -27,7 +24,7 @@ def menu(stdscr, select):
 
     while key!=10:
 
-        midy, midx = count_middle_scr(stdscr)
+        midy, midx = get_middle_scr(stdscr)
         
         stdscr.erase()
 

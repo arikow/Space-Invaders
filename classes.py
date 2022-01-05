@@ -4,19 +4,18 @@ class MovingObject():
     pass
 
 class Shield():
-    def __init__(self, stdscr, cordinates, endurance=4, direction=False):
+    def __init__(self, x, cordinates, endurance=4, direction=False):
         self._cordinates = cordinates
         self._endurance = endurance
-        self.stdscr = stdscr
 
     def cordinates(self):
         return self._cordinates
 
 
-    def draw(self):
+    def draw(self, stdscr):
         line='###'
         strong_line = '@@@'
-        body = ''
+        
         lvl = 0
         endu = self._endurance
         double_life = self._endurance - 4
@@ -34,4 +33,4 @@ class Shield():
                 formated_line = (2-help_lvl)*' ' + f_line + 2*help_lvl*f_char + '\n'
             body += formated_line
             lvl+=1
-        return self.stdscr.addstr(*self.cordinates(), body)
+        return stdscr.addstr(*self.cordinates(), body)
