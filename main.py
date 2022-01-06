@@ -9,7 +9,6 @@ def main(stdscr):
     curses.curs_set(0)
 
     select_menu = ['PLAY', 'LOAD OPTIONS', 'SCOREBOARD', 'HELP', 'EXIT']
-#    menu_idx = {select_menu.index(select): menu for select in select_menu}
     
     select_idx = menu(stdscr, select_menu)
     

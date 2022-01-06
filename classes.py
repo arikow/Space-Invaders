@@ -4,7 +4,7 @@ class MovingObject():
     pass
 
 class Shield():
-    def __init__(self, x, cordinates, endurance=4, direction=False):
+    def __init__(self, cordinates, endurance=4, direction=False):
         self._cordinates = cordinates
         self._endurance = endurance
 
