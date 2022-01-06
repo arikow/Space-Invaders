@@ -13,28 +13,25 @@ def set_position(key, pos, len):
 
 def menu(stdscr, select):
 
-
-    curses.use_default_colors()
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_CYAN)
-    curses.init_pair(2, curses.COLOR_BLUE, -1)
 
     position_idx = 0
-    
+
     key = None
 
     while key!=10:
 
         midy, midx = get_middle_scr(stdscr)
-        
+
         stdscr.erase()
 
         for word in select:
             if position_idx == select.index(word):
                 stdscr.attron(curses.color_pair(1))
-                stdscr.addstr(midy-len(select)//2+select.index(word), midx-len(word)//2, word)       
+                stdscr.addstr(midy-len(select)//2+select.index(word), midx-len(word)//2, word)
                 stdscr.attroff(curses.color_pair(1))
             else:
-                stdscr.addstr(midy-len(select)//2+select.index(word), midx-len(word)//2, word)       
+                stdscr.addstr(midy-len(select)//2+select.index(word), midx-len(word)//2, word)
 
         stdscr.refresh()
 
