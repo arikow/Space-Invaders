@@ -26,7 +26,7 @@ def generate_shilds(stdscr, amount, color, endurance=4):
     stdscr.refresh()
 
 def generate_spaceship(stdscr, color):
-    str = '|-|'
+    str = ' /^\\'
     spship = Spaceship(3, str)
     y, x = stdscr.getmaxyx()
     x//=2
@@ -39,6 +39,6 @@ def play(stdscr):
     color = curses.color_pair(1)
 
     start_screen(stdscr)
-    generate_shilds(stdscr, 8, color)
     generate_spaceship(stdscr, color)
+    generate_shilds(stdscr, 8, color)
     get = stdscr.getch()
