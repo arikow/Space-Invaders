@@ -1,5 +1,5 @@
 import curses
-from classes import *
+
 
 def get_middle_scr(stdscr):
     my, mx = stdscr.getmaxyx()
