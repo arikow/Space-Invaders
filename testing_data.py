@@ -43,7 +43,7 @@ shields_examples = {
 '''
     }
 
-spaceships = [1: '/^\\']
+spaceships = {1: '/^\\'}
 
 '''
  _/^\\_
