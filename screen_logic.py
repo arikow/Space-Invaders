@@ -27,8 +27,9 @@ def draw_object(stdscr, body, cordinates, color):
 def move_obj_right(stdscr, obj, color, direction=True, distance=1):
     y, x = obj.hitbox()[0]
     if direction:
-        x += 1
+        x += distance
     else:
-        x -= 1
-    if obj.isinstance(obj, Spaceship):
-        obj.draw_spaceship(stdscr, (y, x), color)
+        x -= distance
+    # if obj.isinstance(obj, Spaceship):
+    #     obj.draw_spaceship(stdscr, (y, x), color)
+    obj.draw_spaceship(stdscr, (y,x), color)

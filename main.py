@@ -15,6 +15,7 @@ def main(stdscr):
 
     menu_idx[select_idx]
 
+
 def set_position(key, pos, len):
     if key == curses.KEY_UP and pos>0:
         return pos-1

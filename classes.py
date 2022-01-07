@@ -1,5 +1,12 @@
 import curses
-from screen_logic import *
+from screen_logic import draw_object
+
+
+def colors():
+    curses.init_pair(2, curses.COLOR_GREEN, -1)
+    curses.init_pair(3, curses.COLOR_BLUE, -1)
+    curses.init_pair(4, curses.COLOR_WHITE, -1)
+    return [curses.color_pair(i) for i in range(2,5)]
 
 
 class Shield():
@@ -7,7 +14,7 @@ class Shield():
         self._cordinates = cordinates
         self._endurance = endurance
         self._hitbox= []
-        self.color = 10
+        self.color = colors()[0]
 
     def cordinates(self):
         return self._cordinates
@@ -15,8 +22,7 @@ class Shield():
     def hitbox(self):
         return self._hitbox
 
-    def draw_shield(self, stdscr, color):
-
+    def draw_shield(self, stdscr):
 
         line = '###'
         strong_line = '@@@'
@@ -38,7 +44,7 @@ class Shield():
                 formated_line = (2-help_lvl)*' ' + f_line + 2*help_lvl*f_char + '\n'
             body += formated_line
             lvl += 1
-        self._hitbox = draw_object(stdscr, body, self._cordinates, color)
+        self._hitbox = draw_object(stdscr, body, self._cordinates, self.color)
 
 
 
@@ -47,15 +53,15 @@ class Spaceship:
         self._lifes = lifes
         self._spaceship_body = spaceship_body
         self._hibox = []
-        self.color = 10
+        self.color = colors()[1]
 
     def hitbox(self):
         return self._hibox
 
-    def draw_spaceship(self, stdscr, cordinates, color):
+    def draw_spaceship(self, stdscr, cordinates):
         y, x = cordinates
         y -=  1+self._spaceship_body.count('\n')
-        self._hitbox = draw_object(stdscr, self._spaceship_body, (y, x), color)
+        self._hitbox = draw_object(stdscr, self._spaceship_body, (y, x), self.color)
 
     def __str__(self):
         return self._spaceship_draw
