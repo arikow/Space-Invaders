@@ -52,15 +52,14 @@ class Spaceship:
     def __init__(self, lifes, spaceship_body):
         self._lifes = lifes
         self._spaceship_body = spaceship_body
-        self._hibox = []
+        self._hitbox = []
         self.color = colors()[1]
 
     def hitbox(self):
-        return self._hibox
+        return self._hitbox
 
     def draw_spaceship(self, stdscr, cordinates):
         y, x = cordinates
-        y -=  1+self._spaceship_body.count('\n')
         self._hitbox = draw_object(stdscr, self._spaceship_body, (y, x), self.color)
 
     def __str__(self):

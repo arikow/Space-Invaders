@@ -1,5 +1,5 @@
 import curses
-from screen_logic import get_middle_scr, frac_dist_from_border
+from screen_logic import get_middle_scr, frac_dist_from_border, move_obj_right
 from classes import *
 
 
@@ -26,16 +26,21 @@ def generate_shilds(stdscr, amount, endurance=4):
     stdscr.refresh()
 
 def generate_spaceship(stdscr):
-    str = ' /^\\'
-    spship = Spaceship(3, str)
+    body = ' /^\\'
+    xwing = Spaceship(3, body)
     y, x = stdscr.getmaxyx()
+    y -= 1 + body.count('/n')
     x//=2
-    spship.draw_spaceship(stdscr, (y, x))
+    xwing.draw_spaceship(stdscr, (y, x))
+    return xwing
 
 
 def play(stdscr):
 
     start_screen(stdscr)
-    generate_spaceship(stdscr)
+    xwing = generate_spaceship(stdscr)
     generate_shilds(stdscr, 8)
     get = stdscr.getch()
+    for i in range(5):
+        move_obj_right(stdscr, xwing)
+        stdscr.getch()
