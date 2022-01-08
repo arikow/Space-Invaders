@@ -15,7 +15,6 @@ def draw_object(scr, body, cordinates, color, center=False):
         body = body[:-1]
     body_ls = body.splitlines(True)
     y, x = cordinates
-    const_x = x
     length = [len(line) for line in body_ls]
     if center==True:
         x -= max(length)//2
@@ -23,7 +22,7 @@ def draw_object(scr, body, cordinates, color, center=False):
     scr.attron(color)
     for line in body_ls:
         scr.addstr(y+i, x, line)
-        hitbox.extend([(y+i, x_cord) for x_cord in range(const_x, const_x+len(line))])
+        hitbox.extend([(y+i, new_x) for new_x in range(x, x+len(line))])
         i += 1
     scr.attroff(color)
     scr.refresh()
@@ -43,7 +42,7 @@ def clear_object(stdscr, body, cordinates):
 
 
 def move_obj_right(scr, obj, direction=True, distance=1):
-    y, x = obj.mock_hitbox()[0]
+    y, x = obj.mock_hitbox()[1]
 
     scr.clear()
 
@@ -54,3 +53,11 @@ def move_obj_right(scr, obj, direction=True, distance=1):
     # if obj.isinstance(obj, Spaceship):
     #     obj.draw_spaceship(stdscr, (y, x), color)
     obj.draw_spaceship(scr, (y,x))
+
+
+def bullet_move_up(scr, cord, body='|', direction=True, distance=1):
+    y, x = cord
+    scr.addstr(y, x, ' ')
+    scr.addstr(y-1, x, body)
+    scr.refresh()
+    return y-1, x

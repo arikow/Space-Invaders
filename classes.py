@@ -1,5 +1,5 @@
-import curses
-from screen_logic import draw_object
+import curses, time
+from screen_logic import bullet_move_up, draw_object
 
 
 def colors():
@@ -82,7 +82,13 @@ class Spaceship:
 
     def shot(self, scr):
         y , x = self.hitbox()[1]
-        scr.addstr(y-1, x, '|')
+        y -= 1
+        scr.addstr(y, x, '|')
+        while y>0:
+            y, x = bullet_move_up(scr, (y, x))
+        scr.addstr(y, x, ' ')
+
+
     def __str__(self):
         return self._spaceship_draw
 
