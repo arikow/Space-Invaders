@@ -10,10 +10,11 @@ def colors():
 
 
 class Shield():
-    def __init__(self, cordinates, endurance=4, direction=False):
+    def __init__(self, cordinates, endurance, direction=False):
         self._cordinates = cordinates
         self._endurance = endurance
-        self._hitbox= []
+        self._hitbox = []
+        self._mock_hitbox = []
         self.color = colors()[0]
 
     def cordinates(self):
@@ -21,6 +22,9 @@ class Shield():
 
     def hitbox(self):
         return self._hitbox
+
+    def mock_hitbox(self):
+        return self._mock_hitbox
 
     def draw_shield(self, stdscr):
 
@@ -53,15 +57,32 @@ class Spaceship:
         self._lifes = lifes
         self._spaceship_body = spaceship_body
         self._hitbox = []
+        self._mock_hitbox = []
         self.color = colors()[1]
 
     def hitbox(self):
         return self._hitbox
 
-    def draw_spaceship(self, stdscr, cordinates):
-        y, x = cordinates
-        self._hitbox = draw_object(stdscr, self._spaceship_body, (y, x), self.color)
+    def mock_hitbox(self):
+        return self._mock_hitbox
 
+
+    def draw_spaceship(self, scr, cordinates):
+        y, x = cordinates
+        self._mock_hitbox = draw_object(scr, self._spaceship_body, (y, x), self.color, True)
+        hitbox = []
+        move_y, move_x = scr.getbegyx()
+        for t in self.mock_hitbox():
+            y, x = t
+            y += move_y
+            x += move_x
+            hitbox.append((y, x))
+        self._hitbox = hitbox
+        return True
+
+    def shot(self, scr):
+        y , x = self.hitbox()[1]
+        scr.addstr(y-1, x, '|')
     def __str__(self):
         return self._spaceship_draw
 

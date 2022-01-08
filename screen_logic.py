@@ -5,24 +5,28 @@ def get_middle_scr(stdscr):
     my, mx = stdscr.getmaxyx()
     return my//2, mx//2
 
-def frac_dist_from_border(stdscr, frac_up, frac_left):
-    my, mx = stdscr.getmaxyx()
+def frac_dist_from_border(scr, frac_up, frac_left):
+    my, mx = scr.getmaxyx()
     return int(my*frac_up), int(mx*frac_left)
 
-def draw_object(stdscr, body, cordinates, color):
+def draw_object(scr, body, cordinates, color, center=False):
     hitbox = []
+    if body[-1] == '\n':
+        body = body[:-1]
     body_ls = body.splitlines(True)
     y, x = cordinates
     const_x = x
     length = [len(line) for line in body_ls]
-    x -= max(length)//2
+    if center==True:
+        x -= max(length)//2
     i = 0
-    stdscr.attron(color)
+    scr.attron(color)
     for line in body_ls:
-        stdscr.addstr(y+i, x, line)
+        scr.addstr(y+i, x, line)
         hitbox.extend([(y+i, x_cord) for x_cord in range(const_x, const_x+len(line))])
         i += 1
-    stdscr.attroff(color)
+    scr.attroff(color)
+    scr.refresh()
     return hitbox
 
 
@@ -38,10 +42,10 @@ def clear_object(stdscr, body, cordinates):
     return True
 
 
-def move_obj_right(stdscr, obj, direction=True, distance=1):
-    y, x = obj.hitbox()[0]
+def move_obj_right(scr, obj, direction=True, distance=1):
+    y, x = obj.mock_hitbox()[0]
 
-    clear_object(stdscr, obj._spaceship_body, (y, x))
+    scr.clear()
 
     if direction:
         x += distance
@@ -49,4 +53,4 @@ def move_obj_right(stdscr, obj, direction=True, distance=1):
         x -= distance
     # if obj.isinstance(obj, Spaceship):
     #     obj.draw_spaceship(stdscr, (y, x), color)
-    obj.draw_spaceship(stdscr, (y,x))
+    obj.draw_spaceship(scr, (y,x))

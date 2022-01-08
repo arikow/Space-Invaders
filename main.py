@@ -3,19 +3,6 @@ from game import play
 from screen_logic import *
 
 
-def main(stdscr):
-    curses.curs_set(0)
-    curses.use_default_colors()
-
-    select_menu = ['PLAY', 'LOAD OPTIONS', 'SCOREBOARD', 'HELP', 'EXIT']
-
-    select_idx = menu(stdscr, select_menu)
-
-    menu_idx = {0: play(stdscr), 1: load_options(), 2: scoreboard(), 3: help(), 4: ext()}
-
-    menu_idx[select_idx]
-
-
 def set_position(key, pos, len):
     if key == curses.KEY_UP and pos>0:
         return pos-1
@@ -58,8 +45,13 @@ def menu(stdscr, select):
 def scoreboard():
     pass
 
-def help():
-    pass
+def help(stdscr):
+    while True:
+        y, x = stdscr.getmaxyx()
+        stdscr.addstr(f'{y}, {x}\n')
+        k = stdscr.getch()
+        stdscr.addstr(str(k)+'\n')
+
 
 def ext():
     pass
@@ -67,6 +59,18 @@ def ext():
 def load_options():
     pass
 
+
+def main(stdscr):
+    curses.curs_set(0)
+    curses.use_default_colors()
+
+    select_menu = ['PLAY', 'LOAD OPTIONS', 'SCOREBOARD', 'HELP', 'EXIT']
+
+    select_idx = menu(stdscr, select_menu)
+
+    menu_idx = {0: play, 1: load_options(), 2: scoreboard(), 3: help, 4: ext()}
+
+    menu_idx[select_idx](stdscr)
 
 
 curses.wrapper(main)

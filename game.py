@@ -16,37 +16,43 @@ def start_screen(stdscr):
 
 def generate_shilds(stdscr, amount, endurance=4):
     frac_left = 1/(amount+1)
-    const_y, const_x = frac_dist_from_border(stdscr, 0.8, frac_left)
-    x = const_x
+    y, x = stdscr.getmaxyx()
+    shieldswin = curses.newwin(4, x, y-8, 0)
+    frac_x = frac_dist_from_border(shieldswin, 0, frac_left)[1]
+    const_x = frac_x
+    frac_x -= 3 # correct to center
     shields = []
     for i in range(amount):
-        shields.append(Shield((const_y, x), 6))
-        shields[i].draw_shield(stdscr)
-        x+=const_x
-    stdscr.refresh()
+        shields.append(Shield((0, frac_x), endurance))
+        shields[i].draw_shield(shieldswin)
+        frac_x+=const_x
+    shieldswin.refresh()
+    return shieldswin
+
 
 def generate_spaceship(stdscr):
-    body = '____/^\\____'
-    xwing = Spaceship(3, body)
+    stdscr.refresh()
     y, x = stdscr.getmaxyx()
+    body = '|-|'
+    xwing = Spaceship(3, body)
     y -= 1 + body.count('/n')
-    x//=2
-    xwing.draw_spaceship(stdscr, (y, x))
-    return xwing
+    spaceshipwin = curses.newwin(1, x, y-1, 0)
+    xwing.draw_spaceship(spaceshipwin, (0, x//2-1))
+
+    return xwing, spaceshipwin
 
 
 def play(stdscr):
-
+    stdscr.refresh()
     start_screen(stdscr)
-    xwing = generate_spaceship(stdscr)
-    generate_shilds(stdscr, 8)
-
+    xwing, spaceshipswin = generate_spaceship(stdscr)
+    shieldswin = generate_shilds(stdscr, 5)
     while True:
         key = stdscr.getch()
         if key == curses.KEY_RIGHT:
-            move_obj_right(stdscr, xwing)
+            move_obj_right(spaceshipswin, xwing)
         elif key == curses.KEY_LEFT:
-            move_obj_right(stdscr, xwing, False)
-
-        stdscr.vline(5, 10, '#', 10)
+            move_obj_right(spaceshipswin, xwing, False)
+        elif key == 32: #space
+            xwing.shot(stdscr)
         stdscr.refresh()
