@@ -26,7 +26,7 @@ def generate_shilds(stdscr, amount, endurance=4):
     stdscr.refresh()
 
 def generate_spaceship(stdscr):
-    body = ' /^\\'
+    body = '____/^\\____'
     xwing = Spaceship(3, body)
     y, x = stdscr.getmaxyx()
     y -= 1 + body.count('/n')
@@ -40,7 +40,13 @@ def play(stdscr):
     start_screen(stdscr)
     xwing = generate_spaceship(stdscr)
     generate_shilds(stdscr, 8)
-    get = stdscr.getch()
-    for i in range(5):
-        move_obj_right(stdscr, xwing)
-        stdscr.getch()
+
+    while True:
+        key = stdscr.getch()
+        if key == curses.KEY_RIGHT:
+            move_obj_right(stdscr, xwing)
+        elif key == curses.KEY_LEFT:
+            move_obj_right(stdscr, xwing, False)
+
+        stdscr.vline(5, 10, '#', 10)
+        stdscr.refresh()
