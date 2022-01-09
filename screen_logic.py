@@ -41,10 +41,10 @@ def clear_object(stdscr, body, cordinates):
     return True
 
 
-def move_obj_right(scr, obj, direction=True, distance=1):
+def move_obj_right(obj, direction=True, distance=1):
     y, x = obj.mock_hitbox()[1]
 
-    scr.clear()
+    obj.scr().clear()
 
     if direction:
         x += distance
@@ -52,7 +52,7 @@ def move_obj_right(scr, obj, direction=True, distance=1):
         x -= distance
     # if obj.isinstance(obj, Spaceship):
     #     obj.draw_spaceship(stdscr, (y, x), color)
-    obj.draw_spaceship(scr, (y,x))
+    obj.draw_spaceship((y,x))
 
 
 def bullet_move_up(scr, cord, body='|', direction=True, distance=1):

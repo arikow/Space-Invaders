@@ -1,5 +1,5 @@
 import curses, time
-from screen_logic import bullet_move_up, draw_object
+from screen_logic import bullet_move_up, draw_object, move_obj_right
 
 
 def colors():
@@ -9,16 +9,12 @@ def colors():
     return [curses.color_pair(i) for i in range(2,5)]
 
 
-class Shield():
-    def __init__(self, cordinates, endurance, direction=False):
-        self._cordinates = cordinates
-        self._endurance = endurance
+class PhysicalObject:
+    def __init__(self, scr, endurance=1):
         self._hitbox = []
         self._mock_hitbox = []
-        self.color = colors()[0]
-
-    def cordinates(self):
-        return self._cordinates
+        self._mock_screen = scr
+        self._endurance = endurance
 
     def hitbox(self):
         return self._hitbox
@@ -26,7 +22,33 @@ class Shield():
     def mock_hitbox(self):
         return self._mock_hitbox
 
-    def draw_shield(self, stdscr):
+    def endurance(self):
+        return self._endurance
+
+    def scr(self):
+        return self._mock_screen
+
+    def set_hitbox(self):
+        hitbox = []
+        move_y, move_x = self.scr().getbegyx()
+        for t in self.mock_hitbox():
+            y, x = t
+            y += move_y
+            x += move_x
+            hitbox.append((y, x))
+        self._hitbox = hitbox
+
+
+class Shield(PhysicalObject):
+    def __init__(self, scr, endurance, cordinates, direction=False):
+        super().__init__(scr, endurance)
+        self._cordinates = cordinates
+        self.color = colors()[0]
+
+    def cordinates(self):
+        return self._cordinates
+
+    def draw_shield(self):
 
         line = '###'
         strong_line = '@@@'
@@ -48,37 +70,25 @@ class Shield():
                 formated_line = (2-help_lvl)*' ' + f_line + 2*help_lvl*f_char + '\n'
             body += formated_line
             lvl += 1
-        self._hitbox = draw_object(stdscr, body, self._cordinates, self.color)
+        self._mock_hitbox = draw_object(self.scr(), body, self._cordinates, self.color)
 
 
 
-class Spaceship:
-    def __init__(self, lifes, spaceship_body):
-        self._lifes = lifes
-        self._spaceship_body = spaceship_body
-        self._hitbox = []
-        self._mock_hitbox = []
+class Spaceship(PhysicalObject):
+    def __init__(self, scr, lifes, body):
+        super().__init__(scr, lifes)
+        self._body = body
         self.color = colors()[1]
 
-    def hitbox(self):
-        return self._hitbox
-
-    def mock_hitbox(self):
-        return self._mock_hitbox
-
-
-    def draw_spaceship(self, scr, cordinates):
+    def draw_spaceship(self, cordinates):
         y, x = cordinates
-        self._mock_hitbox = draw_object(scr, self._spaceship_body, (y, x), self.color, True)
-        hitbox = []
-        move_y, move_x = scr.getbegyx()
-        for t in self.mock_hitbox():
-            y, x = t
-            y += move_y
-            x += move_x
-            hitbox.append((y, x))
-        self._hitbox = hitbox
+        self._mock_hitbox = draw_object(self.scr(), self._body, (y, x), self.color, True)
+        self.set_hitbox()
         return True
+
+    def move_right(self, direction=True):
+        move_obj_right(self, direction)
+
 
     def shot(self, scr):
         y , x = self.hitbox()[1]
