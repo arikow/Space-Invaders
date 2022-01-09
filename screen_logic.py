@@ -22,7 +22,7 @@ def draw_object(scr, body, cordinates, color, center=False):
     scr.attron(color)
     for line in body_ls:
         scr.addstr(y+i, x, line)
-        hitbox.extend([(y+i, new_x) for new_x in range(x, x+len(line))])
+        hitbox.extend([[(y+i, new_x), line[new_x-x]] for new_x in range(x, x+len(line))])
         i += 1
     scr.attroff(color)
     scr.refresh()
@@ -42,7 +42,7 @@ def clear_object(stdscr, body, cordinates):
 
 
 def move_obj_right(obj, direction=True, distance=1):
-    y, x = obj.mock_hitbox()[1]
+    y, x = obj.mock_hitbox()[1][0]
 
     obj.scr().clear()
 
@@ -50,8 +50,7 @@ def move_obj_right(obj, direction=True, distance=1):
         x += distance
     else:
         x -= distance
-    # if obj.isinstance(obj, Spaceship):
-    #     obj.draw_spaceship(stdscr, (y, x), color)
+    obj.scr().addstr((str(type(obj))))
     obj.draw_spaceship((y,x))
 
 

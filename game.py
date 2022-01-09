@@ -34,7 +34,7 @@ def generate_spaceship(stdscr):
     stdscr.refresh()
     y, x = stdscr.getmaxyx()
     body = '|-|'
-    spaceshipwin = curses.newwin(1, x, y-1, 0)
+    spaceshipwin = curses.newwin(1, x, y-2, 0)
     xwing = Spaceship(spaceshipwin, 3, body)
     y -= 1 + body.count('/n')
     xwing.draw_spaceship((0, x//2-1))
@@ -53,6 +53,6 @@ def play(stdscr):
             xwing.move_right()
         elif key == curses.KEY_LEFT:
             xwing.move_right(False)
-        elif key == 32: #space
+        elif key == 32: #space key
             xwing.shot(stdscr)
         stdscr.refresh()

@@ -32,10 +32,10 @@ class PhysicalObject:
         hitbox = []
         move_y, move_x = self.scr().getbegyx()
         for t in self.mock_hitbox():
-            y, x = t
+            y, x = t[0]
             y += move_y
             x += move_x
-            hitbox.append((y, x))
+            hitbox.append([(y, x), t[1]])
         self._hitbox = hitbox
 
 
@@ -89,16 +89,21 @@ class Spaceship(PhysicalObject):
     def move_right(self, direction=True):
         move_obj_right(self, direction)
 
-
     def shot(self, scr):
-        y , x = self.hitbox()[1]
+        y, x = self.hitbox()[1][0]
         y -= 1
-        scr.addstr(y, x, '|')
-        while y>0:
-            y, x = bullet_move_up(scr, (y, x))
-        scr.addstr(y, x, ' ')
-
+        b = Bullet(scr, (y, x))
+        b.time_to_die()
 
     def __str__(self):
         return self._spaceship_draw
 
+
+class Bullet(PhysicalObject):
+    def __init__(self, scr, cordinates, endurance=1, body='|'):
+        super().__init__(scr, endurance)
+        self._body = body
+        self._hitbox = [[cordinates, body]]
+
+    def time_to_die(self):
+        self.scr().addstr(*self.hitbox()[0][0], '|')
