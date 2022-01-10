@@ -43,6 +43,7 @@ def generate_spaceship(stdscr):
 
 
 def play(stdscr):
+    f = open('temp', 'w+b')
     stdscr.refresh()
     start_screen(stdscr)
     xwing, spaceshipswin = generate_spaceship(stdscr)
@@ -55,4 +56,5 @@ def play(stdscr):
             xwing.move_right(False)
         elif key == 32: #space key
             xwing.shot(stdscr)
+            stdscr.putwin(f)
         stdscr.refresh()

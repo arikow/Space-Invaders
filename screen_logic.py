@@ -10,7 +10,7 @@ def frac_dist_from_border(scr, frac_up, frac_left):
     return int(my*frac_up), int(mx*frac_left)
 
 def draw_object(scr, body, cordinates, color, center=False):
-    hitbox = []
+    mock_hitbox = []
     if body[-1] == '\n':
         body = body[:-1]
     body_ls = body.splitlines(True)
@@ -22,11 +22,15 @@ def draw_object(scr, body, cordinates, color, center=False):
     scr.attron(color)
     for line in body_ls:
         scr.addstr(y+i, x, line)
-        hitbox.extend([[(y+i, new_x), line[new_x-x]] for new_x in range(x, x+len(line))])
+        ls = []
+        for new_x in range(x, x+len(line)):
+            if line[new_x-x] != ' ':
+                ls.append([(y+i, new_x), line[new_x-x]])
+        mock_hitbox.extend(ls)
         i += 1
     scr.attroff(color)
     scr.refresh()
-    return hitbox
+    return mock_hitbox
 
 
 def clear_object(stdscr, body, cordinates):
@@ -60,3 +64,4 @@ def bullet_move_up(scr, cord, body='|', direction=True, distance=1):
     scr.addstr(y-1, x, body)
     scr.refresh()
     return y-1, x
+

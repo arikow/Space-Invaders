@@ -40,10 +40,13 @@ class PhysicalObject:
 
 
 class Shield(PhysicalObject):
-    def __init__(self, scr, endurance, cordinates, direction=False):
+    def __init__(self, scr, endurance, cordinates, color=None):
         super().__init__(scr, endurance)
         self._cordinates = cordinates
-        self.color = colors()[0]
+        if color == None:
+            self.color = colors()[0]
+        else:
+            self.color = color
 
     def cordinates(self):
         return self._cordinates
