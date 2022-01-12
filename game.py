@@ -1,5 +1,5 @@
 import curses
-from screen_logic import get_middle_scr, frac_dist_from_border, move_obj_right
+from screen_logic import get_middle_scr, frac_dist_from_border, move_obj_right, place_symetrically
 from classes import *
 
 
@@ -15,17 +15,13 @@ def start_screen(stdscr):
 
 
 def generate_shilds(stdscr, amount, endurance=4):
-    frac_left = 1/(amount+1)
     y, x = stdscr.getmaxyx()
     shieldswin = curses.newwin(4, x, y-8, 0)
-    frac_x = frac_dist_from_border(shieldswin, 0, frac_left)[1]
-    const_x = frac_x
-    frac_x -= 3 # correct to center, not needed
+    placement = place_symetrically(0, x, amount, False, 7)
     shields = []
-    for i in range(amount):
-        shields.append(Shield(shieldswin, endurance, (0, frac_x)))
-        shields[i].draw()
-        frac_x+=const_x
+    for nr, cords in placement:
+        shields.append(Shield(shieldswin, endurance, (cords)))
+        shields[nr].draw()
     shieldswin.refresh()
     return shieldswin
 

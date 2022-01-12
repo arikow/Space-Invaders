@@ -5,9 +5,20 @@ def get_middle_scr(stdscr):
     my, mx = stdscr.getmaxyx()
     return my//2, mx//2
 
-def frac_dist_from_border(scr, frac_up, frac_left):
-    my, mx = scr.getmaxyx()
-    return int(my*frac_up), int(mx*frac_left)
+def place_symetrically(y, x, amount, centric=True, width=1, heigth=0):
+    placement = {}
+    rest_x = x%(amount+1)
+    x -= rest_x
+    y -= heigth
+    y //= 2
+    interval = x/(amount+1)
+    for i in range(amount):
+        placement[i] = ((y, i+1*interval))
+        if centric == False:
+            placement[i][1] -= width//2
+    placement[0][1] += rest_x//2
+    placement[amount-1][1] += rest_x-rest_x//2
+    return placement
 
 def draw_object(scr, body, cordinates, color, center=False):
     mock_hitbox = []

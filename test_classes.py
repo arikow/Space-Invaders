@@ -40,6 +40,7 @@ def term():
 @pytest.fixture
 def shields():
     return [
+        Shield(term, 5, (10, 10), 10),
         Shield(term, 5, (10, 10), 10)
     ]
 
@@ -57,6 +58,7 @@ def test_shield_init(shields):
     assert s[0].hitbox() == []
     assert s[0].mock_hitbox() == []
     assert s[0].endurance() == 5
+#    assert s[0].body()
 
 def test_hitbox():
     term = Mock_Screen((24, 80))
