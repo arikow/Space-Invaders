@@ -1,5 +1,5 @@
 import curses, time
-from screen_logic import bullet_move_up, draw_object, move_obj_right
+from screen_logic import draw_object, move_obj_right
 
 
 def colors():
@@ -10,9 +10,10 @@ def colors():
 
 
 class PhysicalObject:
-    def __init__(self, scr, endurance=1):
+    def __init__(self, scr, endurance=1, body=''):
         self._hitbox = []
         self._mock_hitbox = []
+        self._body = body
         self._mock_screen = scr
         self._endurance = endurance
 
@@ -27,6 +28,9 @@ class PhysicalObject:
 
     def scr(self):
         return self._mock_screen
+
+    def body(self):
+        return self._body
 
     def set_hitbox(self):
         hitbox = []
@@ -47,12 +51,12 @@ class Shield(PhysicalObject):
             self.color = colors()[0]
         else:
             self.color = color
+        self.create_body()
 
     def cordinates(self):
         return self._cordinates
 
-    def draw_shield(self):
-
+    def create_body(self):
         line = '###'
         strong_line = '@@@'
         body = ''
@@ -73,19 +77,20 @@ class Shield(PhysicalObject):
                 formated_line = (2-help_lvl)*' ' + f_line + 2*help_lvl*f_char + '\n'
             body += formated_line
             lvl += 1
-        self._mock_hitbox = draw_object(self.scr(), body, self._cordinates, self.color)
+        self._body = body
+
+    def draw(self):
+        self._mock_hitbox = draw_object(self.scr(), self.body(), self._cordinates, self.color)
 
 
 
 class Spaceship(PhysicalObject):
     def __init__(self, scr, lifes, body):
-        super().__init__(scr, lifes)
-        self._body = body
+        super().__init__(scr, lifes, body)
         self.color = colors()[1]
 
-    def draw_spaceship(self, cordinates):
-        y, x = cordinates
-        self._mock_hitbox = draw_object(self.scr(), self._body, (y, x), self.color, True)
+    def draw(self, cordinates):
+        self._mock_hitbox = draw_object(self.scr(), self.body(), cordinates, self.color, True)
         self.set_hitbox()
         return True
 
@@ -98,14 +103,10 @@ class Spaceship(PhysicalObject):
         b = Bullet(scr, (y, x))
         b.time_to_die()
 
-    def __str__(self):
-        return self._spaceship_draw
-
 
 class Bullet(PhysicalObject):
     def __init__(self, scr, cordinates, endurance=1, body='|'):
-        super().__init__(scr, endurance)
-        self._body = body
+        super().__init__(scr, endurance, body)
         self._hitbox = [[cordinates, body]]
 
     def time_to_die(self):

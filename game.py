@@ -24,7 +24,7 @@ def generate_shilds(stdscr, amount, endurance=4):
     shields = []
     for i in range(amount):
         shields.append(Shield(shieldswin, endurance, (0, frac_x)))
-        shields[i].draw_shield()
+        shields[i].draw()
         frac_x+=const_x
     shieldswin.refresh()
     return shieldswin
@@ -37,7 +37,7 @@ def generate_spaceship(stdscr):
     spaceshipwin = curses.newwin(1, x, y-2, 0)
     xwing = Spaceship(spaceshipwin, 3, body)
     y -= 1 + body.count('/n')
-    xwing.draw_spaceship((0, x//2-1))
+    xwing.draw((0, x//2-1))
 
     return xwing, spaceshipwin
 

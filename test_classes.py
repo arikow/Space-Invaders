@@ -1,7 +1,6 @@
 import pytest
 import curses
 from classes import *
-# from Additional.help import Mock_Screen
 from testing_data import shields_examples as shields
 
 
@@ -15,7 +14,7 @@ class Mock_Screen:
         if x in range(0, x+1) and y in range(0, y+1):
             self.content[(y,x)] = text
         else:
-            raise IndexError
+            raise IndexError('Write in screen')
 
     def getmaxyx(self):
         return self._size
@@ -32,33 +31,45 @@ class Mock_Screen:
     def attroff(self, *args):
         pass
 
-# @pytest.fixture
-# def terminal():
-#     return Mock_Screen((24, 80))
-#
-# @pytest.fixture
-# def shields():
-#     return [
-#         Shield(terminal, 5, (10, 10), 10)
-#     ]
+
+@pytest.fixture
+def term():
+    return Mock_Screen((24, 80))
 
 
+@pytest.fixture
+def shields():
+    return [
+        Shield(term, 5, (10, 10), 10)
+    ]
 
-def test_shield_init():
-    term = Mock_Screen((24, 80))
-    s = Shield(term, 5, (10, 10), 10)
 
-    assert s.cordinates() == (10, 10)
-    assert s.hitbox() == []
-    assert s.mock_hitbox() == []
-    assert s.endurance() == 5
+@pytest.fixture
+def spaceships():
+    return [
+        Spaceship(term, 3, '|-|')
+    ]
+
+
+def test_shield_init(shields):
+    s = shields
+    assert s[0].cordinates() == (10, 10)
+    assert s[0].hitbox() == []
+    assert s[0].mock_hitbox() == []
+    assert s[0].endurance() == 5
 
 def test_hitbox():
     term = Mock_Screen((24, 80))
     s = Shield(term, 1, (10, 10), 10)
 
-    s.draw_shield()
+    s.draw()
     assert s.mock_hitbox() == [[(10, 12), '#'],
+    [(10, 13), '#'],
+    [(10, 14), '#']
+    ]
+
+    s.set_hitbox()
+    assert s.hitbox() == [[(10, 12), '#'],
     [(10, 13), '#'],
     [(10, 14), '#']
     ]
