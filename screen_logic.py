@@ -5,19 +5,23 @@ def get_middle_scr(stdscr):
     my, mx = stdscr.getmaxyx()
     return my//2, mx//2
 
-def place_symetrically(y, x, amount, centric=True, width=1, heigth=0):
+def place_symetrically(y, x, amount, centric=True, width=1, heigth=0) -> dict:
     placement = {}
+    x += width
     rest_x = x%(amount+1)
     x -= rest_x
     y -= heigth
     y //= 2
+    y -= heigth//2
     interval = x/(amount+1)
-    for i in range(amount):
-        placement[i] = ((y, i+1*interval))
-        if centric == False:
-            placement[i][1] -= width//2
-    placement[0][1] += rest_x//2
-    placement[amount-1][1] += rest_x-rest_x//2
+    if centric == False:
+        x = interval+rest_x//2-2*width//2
+    else:
+        x = interval+rest_x//2-width//2
+    placement[0] = (y, int(x))
+    for i in range(1, amount):
+        x += interval
+        placement[i] = (y, int(x))
     return placement
 
 def draw_object(scr, body, cordinates, color, center=False):
@@ -66,7 +70,7 @@ def move_obj_right(obj, direction=True, distance=1):
     else:
         x -= distance
     obj.scr().addstr((str(type(obj))))
-    obj.draw_spaceship((y,x))
+    obj.draw((y,x))
 
 
 def bullet_move_up(scr, cord, body='|', direction=True, distance=1):

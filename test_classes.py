@@ -1,7 +1,6 @@
 import pytest
-import curses
 from classes import *
-from testing_data import shields_examples as shields
+from t_data import shields_ex
 
 
 class Mock_Screen:
@@ -40,8 +39,12 @@ def term():
 @pytest.fixture
 def shields():
     return [
-        Shield(term, 5, (10, 10), 10),
-        Shield(term, 5, (10, 10), 10)
+        Shield(term, 5, (9, 0), 1),
+        Shield(term, 5, (23, 0), 1),
+        Shield(term, 5, (37, 0), 1),
+        Shield(term, 5, (51, 0), 1),
+        Shield(term, 5, (64, 0), 1),
+        Shield(term, 5, (78, 0), 1)
     ]
 
 
@@ -54,18 +57,18 @@ def spaceships():
 
 def test_shield_init(shields):
     s = shields
-    assert s[0].cordinates() == (10, 10)
+    assert s[0].cordinates() == (9, 0)
     assert s[0].hitbox() == []
     assert s[0].mock_hitbox() == []
     assert s[0].endurance() == 5
-#    assert s[0].body()
+    assert '\n'+s[0].body()+'\n' == shields_ex[5]
 
-def test_hitbox():
+def test_hitbox(shields):
     term = Mock_Screen((24, 80))
-    s = Shield(term, 1, (10, 10), 10)
+    s = Shield[0]
 
     s.draw()
-    assert s.mock_hitbox() == [[(10, 12), '#'],
+    assert s.mock_hitbox() == [[(0, 12), '#'],
     [(10, 13), '#'],
     [(10, 14), '#']
     ]

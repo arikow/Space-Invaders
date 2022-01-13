@@ -1,5 +1,5 @@
 import curses
-from screen_logic import get_middle_scr, frac_dist_from_border, move_obj_right, place_symetrically
+from screen_logic import get_middle_scr, move_obj_right, place_symetrically
 from classes import *
 
 
@@ -19,7 +19,7 @@ def generate_shilds(stdscr, amount, endurance=4):
     shieldswin = curses.newwin(4, x, y-8, 0)
     placement = place_symetrically(0, x, amount, False, 7)
     shields = []
-    for nr, cords in placement:
+    for nr, cords in placement.items():
         shields.append(Shield(shieldswin, endurance, (cords)))
         shields[nr].draw()
     shieldswin.refresh()
