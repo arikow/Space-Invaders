@@ -1,5 +1,5 @@
 import curses
-from screen_logic import get_middle_scr, move_obj_right, place_symetrically
+from screen_logic import get_middle_scr, move_obj_right, place_symetrically, time_to_die
 from classes import *
 
 
@@ -29,28 +29,30 @@ def generate_shilds(stdscr, amount, endurance=4):
 def generate_spaceship(stdscr):
     stdscr.refresh()
     y, x = stdscr.getmaxyx()
-    body = '|-|'
+    body = '|o|'
     spaceshipwin = curses.newwin(1, x, y-2, 0)
-    xwing = Spaceship(spaceshipwin, 3, body)
+    tiefighter = Spaceship(spaceshipwin, 3, body)
     y -= 1 + body.count('/n')
-    xwing.draw((0, x//2-1))
+    tiefighter.draw((0, x//2-1))
 
-    return xwing, spaceshipwin
+    return tiefighter
 
 
 def play(stdscr):
-    f = open('temp', 'w+b')
+    stdscr.nodelay(True)
     stdscr.refresh()
     start_screen(stdscr)
-    xwing, spaceshipswin = generate_spaceship(stdscr)
+    tiefighter = generate_spaceship(stdscr)
     shieldswin = generate_shilds(stdscr, 5)
+    i=0
     while True:
         key = stdscr.getch()
         if key == curses.KEY_RIGHT:
-            xwing.move_right()
+            tiefighter.move_right()
         elif key == curses.KEY_LEFT:
-            xwing.move_right(False)
+            tiefighter.move_right(False)
         elif key == 32: #space key
-            xwing.shot(stdscr)
-            stdscr.putwin(f)
+            tiefighter.shot(stdscr)
+        i+=1
+        time_to_die(stdscr, tiefighter.bullets(), i)
         stdscr.refresh()

@@ -32,7 +32,7 @@ class PhysicalObject:
     def body(self):
         return self._body
 
-    def set_hitbox(self):
+    def update_true_hitbox(self):
         hitbox = []
         move_y, move_x = self.scr().getbegyx()
         for t in self.mock_hitbox():
@@ -87,11 +87,15 @@ class Shield(PhysicalObject):
 class Spaceship(PhysicalObject):
     def __init__(self, scr, lifes, body):
         super().__init__(scr, lifes, body)
+        self._bullets = []
         self.color = colors()[1]
+
+    def bullets(self):
+        return self._bullets
 
     def draw(self, cordinates):
         self._mock_hitbox = draw_object(self.scr(), self.body(), cordinates, self.color, True)
-        self.set_hitbox()
+        self.update_true_hitbox()
         return True
 
     def move_right(self, direction=True):
@@ -99,15 +103,17 @@ class Spaceship(PhysicalObject):
 
     def shot(self, scr):
         y, x = self.hitbox()[1][0]
-        y -= 1
-        b = Bullet(scr, (y, x))
-        b.time_to_die()
+        self._bullets.append(Bullet(scr, (y, x)))
 
 
 class Bullet(PhysicalObject):
     def __init__(self, scr, cordinates, endurance=1, body='|'):
         super().__init__(scr, endurance, body)
         self._hitbox = [[cordinates, body]]
+        self.puff()
 
-    def time_to_die(self):
+    def puff(self):
         self.scr().addstr(*self.hitbox()[0][0], '|')
+
+    def tick(self, cord):
+        self._hitbox[0][0] = cord

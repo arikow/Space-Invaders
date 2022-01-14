@@ -28,7 +28,7 @@ def draw_object(scr, body, cordinates, color, center=False):
     mock_hitbox = []
     if body[-1] == '\n':
         body = body[:-1]
-    body_ls = body.splitlines(True)
+    body_ls = body.splitlines()
     y, x = cordinates
     length = [len(line) for line in body_ls]
     if center==True:
@@ -38,9 +38,9 @@ def draw_object(scr, body, cordinates, color, center=False):
     for line in body_ls:
         scr.addstr(y+i, x, line)
         ls = []
-        for new_x in range(x, x+len(line)):
-            if line[new_x-x] != ' ':
-                ls.append([(y+i, new_x), line[new_x-x]])
+        for index, char in enumerate(line):
+            if char != ' ':
+                ls.append([(y+i, x+index), char])
         mock_hitbox.extend(ls)
         i += 1
     scr.attroff(color)
@@ -73,10 +73,16 @@ def move_obj_right(obj, direction=True, distance=1):
     obj.draw((y,x))
 
 
-def bullet_move_up(scr, cord, body='|', direction=True, distance=1):
-    y, x = cord
-    scr.addstr(y, x, ' ')
-    scr.addstr(y-1, x, body)
-    scr.refresh()
-    return y-1, x
+def time_to_die(scr, bullets, i, distance=1):
+    if i==50:
+        for bullet in bullets:
+            y, x = bullet.hitbox()[0][0]
+            body = bullet.hitbox()[0][1]
+            #if y<=0:
+            #    bullet.delate()
+            scr.addstr(y, x, ' ')
+            scr.addstr(y-1, x, body)
+            scr.refresh()
+            bullet.tick((y-distance, x))
+        i = 0
 
