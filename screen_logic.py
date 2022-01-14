@@ -24,8 +24,9 @@ def place_symetrically(y, x, amount, centric=True, width=1, heigth=0) -> dict:
         placement[i] = (y, int(x))
     return placement
 
-def draw_object(scr, body, cordinates, color, center=False):
-    mock_hitbox = []
+def draw_object(scr, obj, cordinates, color, center=False):
+    body = obj.body()
+    mock_hitbox = {}
     if body[-1] == '\n':
         body = body[:-1]
     body_ls = body.splitlines()
@@ -37,31 +38,29 @@ def draw_object(scr, body, cordinates, color, center=False):
     scr.attron(color)
     for line in body_ls:
         scr.addstr(y+i, x, line)
-        ls = []
         for index, char in enumerate(line):
             if char != ' ':
-                ls.append([(y+i, x+index), char])
-        mock_hitbox.extend(ls)
+                mock_hitbox[(y+i, x+index)] = (obj, char)
         i += 1
     scr.attroff(color)
     scr.refresh()
     return mock_hitbox
 
 
-def clear_object(stdscr, body, cordinates):
-    body
-    body_ls = body.splitlines(True)
-    i = 0
-    y, x = cordinates
-    for line in body_ls:
-        line = len(line)*' '
-        stdscr.addstr(y+i, x, line)
-        i += 1
-    return True
+# def clear_object(stdscr, body, cordinates):
+#     body
+#     body_ls = body.splitlines(True)
+#     i = 0
+#     y, x = cordinates
+#     for line in body_ls:
+#         line = len(line)*' '
+#         stdscr.addstr(y+i, x, line)
+#         i += 1
+#     return True
 
 
 def move_obj_right(obj, direction=True, distance=1):
-    y, x = obj.mock_hitbox()[1][0]
+    y, x = obj.keys_mock_hitbox()[1]
 
     obj.scr().clear()
 
@@ -73,16 +72,20 @@ def move_obj_right(obj, direction=True, distance=1):
     obj.draw((y,x))
 
 
-def time_to_die(scr, bullets, i, distance=1):
-    if i==50:
+def time_to_die(scr, bullets, space_managment, i, distance=1):
+    if i == 0:
         for bullet in bullets:
-            y, x = bullet.hitbox()[0][0]
-            body = bullet.hitbox()[0][1]
-            #if y<=0:
-            #    bullet.delate()
+            y, x = bullet.keys_hitbox()[0]
+            body = bullet.vals_hitbox()[0][1]
+            if y<=0:
+                bullets.remove(bullet)
+            elif (y, x) in list(space_managment.keys()):
+                bullets.remove(bullet)
+                space_managment.pop((y, x))
+            else:
+                scr.addstr(y-1, x, body)
+                bullet.tick((y, x), distance)
             scr.addstr(y, x, ' ')
-            scr.addstr(y-1, x, body)
             scr.refresh()
-            bullet.tick((y-distance, x))
-        i = 0
+
 

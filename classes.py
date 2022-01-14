@@ -11,8 +11,8 @@ def colors():
 
 class PhysicalObject:
     def __init__(self, scr, endurance=1, body=''):
-        self._hitbox = []
-        self._mock_hitbox = []
+        self._hitbox = {}
+        self._mock_hitbox = {}
         self._body = body
         self._mock_screen = scr
         self._endurance = endurance
@@ -20,8 +20,20 @@ class PhysicalObject:
     def hitbox(self):
         return self._hitbox
 
+    def keys_hitbox(self):
+        return list(self.hitbox().keys())
+
+    def vals_hitbox(self):
+        return list(self.hitbox().values())
+
     def mock_hitbox(self):
         return self._mock_hitbox
+
+    def keys_mock_hitbox(self):
+        return list(self.mock_hitbox().keys())
+
+    def vals_mock_hitbox(self):
+        return list(self.mock_hitbox().values())
 
     def endurance(self):
         return self._endurance
@@ -33,13 +45,13 @@ class PhysicalObject:
         return self._body
 
     def update_true_hitbox(self):
-        hitbox = []
+        hitbox = {}
         move_y, move_x = self.scr().getbegyx()
-        for t in self.mock_hitbox():
-            y, x = t[0]
+        for key, value in self.mock_hitbox().items():
+            y, x = key
             y += move_y
             x += move_x
-            hitbox.append([(y, x), t[1]])
+            hitbox[(y, x)] = value
         self._hitbox = hitbox
 
 
@@ -52,6 +64,9 @@ class Shield(PhysicalObject):
         else:
             self.color = color
         self.create_body()
+
+    def __eq__(self, other):
+        return ('Shield', self.cordinates(), self.endurance()) == other
 
     def cordinates(self):
         return self._cordinates
@@ -80,7 +95,8 @@ class Shield(PhysicalObject):
         self._body = body
 
     def draw(self):
-        self._mock_hitbox = draw_object(self.scr(), self.body(), self._cordinates, self.color)
+        self._mock_hitbox = draw_object(self.scr(), self, self._cordinates, self.color)
+        self.update_true_hitbox()
 
 
 
@@ -94,7 +110,7 @@ class Spaceship(PhysicalObject):
         return self._bullets
 
     def draw(self, cordinates):
-        self._mock_hitbox = draw_object(self.scr(), self.body(), cordinates, self.color, True)
+        self._mock_hitbox = draw_object(self.scr(), self, cordinates, self.color, True)
         self.update_true_hitbox()
         return True
 
@@ -102,18 +118,25 @@ class Spaceship(PhysicalObject):
         move_obj_right(self, direction)
 
     def shot(self, scr):
-        y, x = self.hitbox()[1][0]
-        self._bullets.append(Bullet(scr, (y, x)))
+        y, x = self.keys_hitbox()[1]
+        self._bullets.append(Bullet(scr, (y-1, x)))
 
+
+class Enemy(Spaceship):
+    pass
 
 class Bullet(PhysicalObject):
     def __init__(self, scr, cordinates, endurance=1, body='|'):
         super().__init__(scr, endurance, body)
-        self._hitbox = [[cordinates, body]]
+        self._hitbox = {cordinates: (self, body)}
         self.puff()
 
     def puff(self):
-        self.scr().addstr(*self.hitbox()[0][0], '|')
+        self.scr().addstr(*self.keys_hitbox()[0], '|')
 
-    def tick(self, cord):
-        self._hitbox[0][0] = cord
+    def tick(self, cord, distance):
+        val = self._hitbox[cord]
+        self._hitbox.pop(cord)
+        y, x = cord
+        y -= distance
+        self._hitbox[(y ,x)] = val

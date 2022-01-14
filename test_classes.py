@@ -57,9 +57,9 @@ def spaceships():
 
 def test_shield_init(shields):
     s = shields
-    assert s[0].cordinates() == (9, 0)
-    assert s[0].hitbox() == []
-    assert s[0].mock_hitbox() == []
+    assert s[0].cordinates() == (0, 9)
+    assert s[0].hitbox() == {}
+    assert s[0].mock_hitbox() == {}
     assert s[0].endurance() == 0
     assert shields[0].body() == shields_body_ex[0]
 
@@ -68,10 +68,10 @@ def test_shield_init(shields):
 def test_shields_body_creator(shields, num, body):
     assert '\n'+shields[num].body() == body
 
-def test_hitbox(shields):
+def test_shield_hitbox(shields):
     s = shields[4]
     s.draw()
     assert s.mock_hitbox() == shields_hitbox_ex[4]
 
-    s.set_hitbox()
+    s.update_true_hitbox()
     assert s.hitbox() == shields_hitbox_ex[4]
