@@ -1,5 +1,4 @@
-import curses
-
+import time
 
 def get_middle_scr(stdscr):
     my, mx = stdscr.getmaxyx()
@@ -61,9 +60,8 @@ def draw_object(scr, obj, cordinates, color, center=False):
 
 
 def move_obj_yx(obj, down=None, right=None, distance=1):
-    y, x = obj.keys_mock_hitbox()[1]
-
-    obj.scr().clear()
+    index = len(obj.keys_mock_hitbox())//2
+    y, x = obj.keys_mock_hitbox()[index]
     if down==True:
         y += distance
     elif down==False:
@@ -77,8 +75,8 @@ def move_obj_yx(obj, down=None, right=None, distance=1):
     obj.draw((y,x))
 
 
-def time_to_die(scr, bullets, i, distance=1):
-    if i == 0:
+def time_to_die(scr, bullets, running, distance=1): #function which move bullets
+    if running == 0:
         for bullet in bullets:
             y, x = bullet.keys_hitbox()[0]
             body = bullet.vals_hitbox()[0][1]
@@ -93,4 +91,26 @@ def time_to_die(scr, bullets, i, distance=1):
             scr.addstr(y, x, ' ')
             scr.refresh()
 
-
+def move_enemies(scr, enemies, flag, right, i):
+    if i == 0:
+        y, x = scr.getmaxyx()
+        y0, x0 = enemies[0][0].keys_hitbox()[0]
+        y1, x1 = enemies[-1][-1].keys_hitbox()[-1]
+        scr.clear()
+        for row in enemies:
+            for enemy in row:
+                if flag==False:
+                    if x1>x:
+                        move_obj_yx(enemy, down=True)
+                        right=False
+                        flag==True
+                    elif x0<0:
+                        move_obj_yx(enemy, down=True)
+                        right=True
+                        flag==True
+                    else:
+                        move_obj_yx(enemy, right=right)
+                elif flag==True:
+                    move_obj_yx(enemy, right=right)
+                    flag=False
+    return flag, right

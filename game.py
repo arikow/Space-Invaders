@@ -1,7 +1,7 @@
 import curses
-from screen_logic import get_middle_scr, place_symetrically, time_to_die
+from screen_logic import get_middle_scr, place_symetrically, time_to_die, move_enemies
 from classes import *
-
+import threading
 
 
 def start_screen(stdscr):
@@ -42,16 +42,18 @@ def generate_enemies(stdscr, space_management):
     stdscr.refresh()
     y ,x = stdscr.getmaxyx()
     amount = x//3 - 10
-    body = '<@>'
+    body = '@'
     enemies = []
     enemieswin = curses.newwin(y-12, x, 3, 0)
     for row in range(5):
         placement = place_symetrically(row, x-6, amount)
+        row_emy = []
         for nr, cords in placement.items():
-            enemies.append(Enemy(enemieswin, space_management, 1, body))
-            enemies[nr].draw(cords)
+            row_emy.append(Enemy(enemieswin, space_management, 1, body))
+            row_emy [nr].draw(cords)
+        enemies.append(row_emy)
     enemieswin.refresh()
-    return enemies
+    return enemies, enemieswin
 
 
 
@@ -61,8 +63,10 @@ def play(stdscr):
     stdscr.nodelay(True)
     fighter = generate_spaceship(stdscr, space_management)
     generate_shilds(stdscr, 5, space_management)
-    enemeis = generate_enemies(stdscr, space_management)
+    enemies, enemieswin = generate_enemies(stdscr, space_management)
     i=0
+    flag=False
+    right=True
     while key!=27:
         key = stdscr.getch()
         if key == curses.KEY_RIGHT:
@@ -72,7 +76,8 @@ def play(stdscr):
         elif key == 32: #space key
             fighter.shot(stdscr, space_management)
         i+=1
-        i=i%100000
-        time_to_die(stdscr, fighter._bullets, i)
-        stdscr.addstr(0, 0, "yikes scores")
+        i=i%1000000
+        time_to_die(stdscr, fighter._bullets, i%100000)
+        flag, right=move_enemies(enemieswin, enemies, flag, right, i)
+        stdscr.addstr(0, 0, "yikes score")
         stdscr.refresh()
