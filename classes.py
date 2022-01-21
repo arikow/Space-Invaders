@@ -1,5 +1,5 @@
 import curses, time
-from screen_logic import draw_object, move_obj_right
+from screen_logic import draw_object, move_obj_yx
 
 
 def colors():
@@ -8,14 +8,30 @@ def colors():
     curses.init_pair(4, curses.COLOR_WHITE, -1)
     return [curses.color_pair(i) for i in range(2,5)]
 
+class InvalidSpaceManagment(Exception):
+    def __init__(self):
+        super().__init__("Some hitobxes aren't cover or imaginary hitboxes exsit (number of hitobxes doesn't match)")
+
 
 class PhysicalObject:
-    def __init__(self, scr, endurance=1, body=''):
+    def __init__(self, scr, space_management, endurance=1, body=''):
         self._hitbox = {}
         self._mock_hitbox = {}
         self._body = body
         self._mock_screen = scr
         self._endurance = endurance
+        self._space_management = space_management
+
+    def space_management(self):
+        return self._space_management
+
+    def new_assigment_sm(self, add=False, delate=False):
+        if isinstance(delate, dict):
+            for cord in delate.keys():
+                self._space_management.pop(cord)
+
+        if isinstance(add, dict):
+            self._space_management.update(add)
 
     def hitbox(self):
         return self._hitbox
@@ -45,6 +61,8 @@ class PhysicalObject:
         return self._body
 
     def update_true_hitbox(self):
+        if self.hitbox():
+            self.new_assigment_sm(delate=self.hitbox())
         hitbox = {}
         move_y, move_x = self.scr().getbegyx()
         for key, value in self.mock_hitbox().items():
@@ -53,11 +71,13 @@ class PhysicalObject:
             x += move_x
             hitbox[(y, x)] = value
         self._hitbox = hitbox
+        self.new_assigment_sm(add=self.hitbox())
+
 
 
 class Shield(PhysicalObject):
-    def __init__(self, scr, endurance, cordinates, color=None):
-        super().__init__(scr, endurance)
+    def __init__(self, scr, space_management, endurance, cordinates, color=None):
+        super().__init__(scr, space_management, endurance)
         self._cordinates = cordinates
         if color == None:
             self.color = colors()[0]
@@ -101,8 +121,8 @@ class Shield(PhysicalObject):
 
 
 class Spaceship(PhysicalObject):
-    def __init__(self, scr, lifes, body):
-        super().__init__(scr, lifes, body)
+    def __init__(self, scr, space_management, lifes, body):
+        super().__init__(scr, space_management, lifes, body)
         self._bullets = []
         self.color = colors()[1]
 
@@ -115,19 +135,19 @@ class Spaceship(PhysicalObject):
         return True
 
     def move_right(self, direction=True):
-        move_obj_right(self, direction)
+        move_obj_yx(self, right=direction)
 
-    def shot(self, scr):
+    def shot(self, scr, space_management):
         y, x = self.keys_hitbox()[1]
-        self._bullets.append(Bullet(scr, (y-1, x)))
+        self._bullets.append(Bullet(scr, space_management, (y-1, x)))
 
 
 class Enemy(Spaceship):
     pass
 
 class Bullet(PhysicalObject):
-    def __init__(self, scr, cordinates, endurance=1, body='|'):
-        super().__init__(scr, endurance, body)
+    def __init__(self, scr, space_management, cordinates, endurance=1, body='|'):
+        super().__init__(scr, space_management, endurance, body)
         self._hitbox = {cordinates: (self, body)}
         self.puff()
 

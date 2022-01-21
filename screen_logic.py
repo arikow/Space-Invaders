@@ -5,16 +5,17 @@ def get_middle_scr(stdscr):
     my, mx = stdscr.getmaxyx()
     return my//2, mx//2
 
-def place_symetrically(y, x, amount, centric=True, width=1, heigth=0) -> dict:
+def place_symetrically(y, x, amount, ycentric=False, xcentric=True, width=1, heigth=0) -> dict:
     placement = {}
     x += width
     rest_x = x%(amount+1)
     x -= rest_x
-    y -= heigth
-    y //= 2
-    y -= heigth//2
+    if ycentric==True:
+        y -= heigth
+        y //= 2
+        y -= heigth//2
     interval = x/(amount+1)
-    if centric == False:
+    if xcentric == False:
         x = interval+rest_x//2-2*width//2
     else:
         x = interval+rest_x//2-width//2
@@ -59,29 +60,33 @@ def draw_object(scr, obj, cordinates, color, center=False):
 #     return True
 
 
-def move_obj_right(obj, direction=True, distance=1):
+def move_obj_yx(obj, down=None, right=None, distance=1):
     y, x = obj.keys_mock_hitbox()[1]
 
     obj.scr().clear()
+    if down==True:
+        y += distance
+    elif down==False:
+        y -= distance
 
-    if direction:
+    if right==True:
         x += distance
-    else:
+    elif right==False:
         x -= distance
-    obj.scr().addstr((str(type(obj))))
+
     obj.draw((y,x))
 
 
-def time_to_die(scr, bullets, space_managment, i, distance=1):
+def time_to_die(scr, bullets, i, distance=1):
     if i == 0:
         for bullet in bullets:
             y, x = bullet.keys_hitbox()[0]
             body = bullet.vals_hitbox()[0][1]
             if y<=0:
                 bullets.remove(bullet)
-            elif (y, x) in list(space_managment.keys()):
+            elif (y, x) in list(bullet.space_management().keys()):
                 bullets.remove(bullet)
-                space_managment.pop((y, x))
+                bullet.new_assigment_sm(delate={(y, x): None})
             else:
                 scr.addstr(y-1, x, body)
                 bullet.tick((y, x), distance)
