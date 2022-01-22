@@ -1,12 +1,13 @@
 import curses
+from curses.textpad import Textbox
 from screen_logic import get_middle_scr, place_symetrically, time_to_die, move_enemies, random_enemy_shot
 from classes import *
-import time
+from model_io import save_score
 
 
 def start_screen(stdscr):
     midy, midx = get_middle_scr(stdscr)
-    stdscr.addstr(midy, 20, 'Press LEFT/RIGHT arrows to move your fighter...')
+    stdscr.addstr(midy, 10, 'Press LEFT/RIGHT arrows to move your fighter, SPACE to shot...')
     stdscr.refresh()
     key = stdscr.getch()
     stdscr.clear()
@@ -46,7 +47,7 @@ def generate_enemies(stdscr, space_management, bullets):
     allenemies = {}
     for i in range(amount):
         allenemies[i] = {}
-    enemieswin = curses.newwin(y-12, x, 3, 0)
+    enemieswin = curses.newwin(y-12, x, 4, 0)
     for row in range(5):
         placement = place_symetrically(row, x-6, amount)
         row_emy = []
@@ -59,14 +60,21 @@ def generate_enemies(stdscr, space_management, bullets):
 def endgame(stdscr, score):
     stdscr.clear()
     midy, midx = get_middle_scr(stdscr)
-    stdscr.addstr(midy, 20, 'GAME OVER... to save your score press S, to quit Q/ESC')
-    stdscr.addstr(midy+1, 20, f'YOUR SCORE: {score}')
+    stdscr.addstr(midy, 10, 'GAME OVER... to save your score press S, to quit ESC')
+    stdscr.addstr(midy+1, 10, f'YOUR SCORE: {score}')
     stdscr.refresh()
-    time.sleep(3)
     key = 0
-    while key != 27 or 10:
+    while key != 27:
         key = stdscr.getch()
-
+        if key == 115 or key == 83:
+            textwin = curses.newwin(1, 20, midy+2, 31)
+            box = Textbox(textwin)
+            stdscr.addstr(midy+2, 10, 'ENTER YOUR NICKNAME: ')
+            stdscr.refresh()
+            box.edit()
+            nickname = box.gather()
+            save_score(nickname, score)
+            return
 
 
 def play(stdscr):

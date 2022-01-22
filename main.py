@@ -63,6 +63,7 @@ def load_options():
 def main(stdscr):
     curses.curs_set(0)
     curses.use_default_colors()
+    curses.set_escdelay(100)
 
     select_menu = ['PLAY', 'LOAD OPTIONS', 'SCOREBOARD', 'HELP', 'EXIT']
 
