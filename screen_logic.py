@@ -1,4 +1,4 @@
-import time
+import random
 
 def get_middle_scr(stdscr):
     my, mx = stdscr.getmaxyx()
@@ -75,40 +75,51 @@ def move_obj_yx(obj, down=None, right=None, distance=1):
     obj.draw((y,x))
 
 
-def time_to_die(scr, bullets, running, distance=1): #function which move bullets
+def time_to_die(scr, bullets, score, running, distance=1): #function which move bullets
     if running == 0:
         for bullet in bullets:
             sm = bullet.space_management()
             y, x = bullet.keys_hitbox()[0]
             body = bullet.vals_hitbox()[0][1]
-            if y<=0:
+            scr.addstr(y, x, ' ')
+            if y<=0 or y>=scr.getmaxyx()[0]-1:
                 bullets.remove(bullet)
             elif (y, x) in sm.keys():
                 obj = sm[(y, x)][0]
+                if bullet.direction() and obj.body() == '@':
+                    score += 1
+                elif not bullet.direction() and obj.body() == '|o|':
+                    obj.take_damage()
                 obj.remove()
                 bullets.remove(bullet)
                 bullet.new_assigment_sm(delate={(y, x): None})
             else:
-                scr.addstr(y-1, x, body)
+                if bullet.direction():
+                    move = -1
+                else:
+                    move = 1
+                scr.addstr(y+move, x, body)
                 bullet.tick((y, x), distance)
-            scr.addstr(y, x, ' ')
             scr.refresh()
+    return score
 
 def move_enemies(scr, allenemies, flag, right, i):
     if i == 0:
         y, x = scr.getmaxyx()
         last_x = 0
         first_x = x
+        enemies = []
 
-        for enemy in allenemies:
-            x0 = enemy.keys_mock_hitbox()[0][1]
-            x1 = enemy.keys_mock_hitbox()[-1][1]
-            if first_x > x0:
-                first_x = x0
-            if last_x < x1:
-                last_x = x1
+        for column in allenemies:
+            for enemy in column.values():
+                x0 = enemy.keys_mock_hitbox()[0][1]
+                x1 = enemy.keys_mock_hitbox()[-1][1]
+                enemies.append(enemy)
+                if first_x > x0:
+                    first_x = x0
+                if last_x < x1:
+                    last_x = x1
 
-        enemies = allenemies.copy()
         enemies.reverse()
 
         if flag==False:
@@ -132,3 +143,15 @@ def move_enemies(scr, allenemies, flag, right, i):
                 move_obj_yx(enemy, right=right)
                 flag=False
     return flag, right
+
+
+def random_enemy_shot(scr, columns, intense):
+    intense *= 10
+    front_row = []
+    for column in columns:
+        if column:
+            max_row = max(column.keys())
+            front_row.append(column[max_row])
+    if random.randint(0, 100000000) < intense:
+        enemy = random.choice(front_row)
+        enemy.shot(scr, direction=False)

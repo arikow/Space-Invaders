@@ -1,5 +1,5 @@
 import curses, time
-from screen_logic import draw_object, move_obj_yx, objclear
+from screen_logic import draw_object, move_obj_yx
 
 def colors():
     curses.init_pair(2, curses.COLOR_GREEN, -1)
@@ -56,6 +56,9 @@ class PhysicalObject:
 
     def endurance(self):
         return self._endurance
+
+    def take_damage(self):
+        self._endurance -= 1
 
     def scr(self):
         return self._mock_screen
@@ -122,11 +125,10 @@ class Shield(PhysicalObject):
         self.update_true_hitbox()
 
 
-
 class Spaceship(PhysicalObject):
-    def __init__(self, scr, space_management, lifes, body):
+    def __init__(self, scr, space_management, lifes, body, bullets):
         super().__init__(scr, space_management, lifes, body)
-        self._bullets = []
+        self._bullets = bullets
         self.color = colors()[1]
 
     def bullets(self):
@@ -141,17 +143,22 @@ class Spaceship(PhysicalObject):
     def move_right(self, direction=True):
         move_obj_yx(self, right=direction)
 
-    def shot(self, scr, space_management):
-        y, x = self.keys_hitbox()[1]
-        self._bullets.append(Bullet(scr, space_management, (y-1, x)))
+    def shot(self, scr, direction=True):
+        idx = len(self.keys_hitbox())//2
+        y, x = self.keys_hitbox()[idx]
+        if direction:
+            y -= 1
+        else:
+            y += 1
+        self._bullets.append(Bullet(scr, self._space_management, (y, x), direction))
 
 
 class Enemy(Spaceship):
-    def __init__(self, scr, space_management, lifes, body, allenemies, index):
-        super().__init__(scr, space_management, lifes, body)
+    def __init__(self, scr, space_management, lifes, body, allenemies, row, column, bullets):
+        super().__init__(scr, space_management, lifes, body, bullets)
         self._allenemies=allenemies
-        self._index = index
-        self._allenemies[index] = self
+        self._index = (column, row) # diffrent tuple than others -> (x, y)
+        self._allenemies[column][row] = self
 
     def allenemies(self):
         return self._allenemies
@@ -166,13 +173,19 @@ class Enemy(Spaceship):
         return True
 
     def remove(self):
-        self._allenemies.pop(self.index())
+        x, y = self.index()
+        self._allenemies[x].pop(y)
+
 
 class Bullet(PhysicalObject):
-    def __init__(self, scr, space_management, cordinates, endurance=1, body='|'):
+    def __init__(self, scr, space_management, cordinates, direction, endurance=1, body='|'):
         super().__init__(scr, space_management, endurance, body)
         self._hitbox = {cordinates: (self, body)}
+        self._direction = direction
         self.puff()
+
+    def direction(self):
+        return self._direction
 
     def puff(self):
         self.scr().addstr(*self.keys_hitbox()[0], '|')
@@ -181,5 +194,8 @@ class Bullet(PhysicalObject):
         val = self._hitbox[cord]
         self._hitbox.pop(cord)
         y, x = cord
-        y -= distance
+        if self.direction():
+            y -= distance
+        else:
+            y += distance
         self._hitbox[(y ,x)] = val
