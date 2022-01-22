@@ -43,17 +43,16 @@ def generate_enemies(stdscr, space_management):
     y ,x = stdscr.getmaxyx()
     amount = x//3 - 10
     body = '@'
-    enemies = []
+    allenemies = {}
     enemieswin = curses.newwin(y-12, x, 3, 0)
     for row in range(5):
         placement = place_symetrically(row, x-6, amount)
         row_emy = []
         for nr, cords in placement.items():
-            row_emy.append(Enemy(enemieswin, space_management, 1, body))
-            row_emy [nr].draw(cords)
-        enemies.append(row_emy)
+            row_emy.append(Enemy(enemieswin, space_management, 1, body, allenemies, nr+row*amount))
+            row_emy[nr].draw(cords)
     enemieswin.refresh()
-    return enemies, enemieswin
+    return enemieswin, allenemies, amount
 
 
 
@@ -63,7 +62,7 @@ def play(stdscr):
     stdscr.nodelay(True)
     fighter = generate_spaceship(stdscr, space_management)
     generate_shilds(stdscr, 5, space_management)
-    enemies, enemieswin = generate_enemies(stdscr, space_management)
+    enemieswin, allenemies, amount = generate_enemies(stdscr, space_management)
     i=0
     flag=False
     right=True
@@ -76,8 +75,8 @@ def play(stdscr):
         elif key == 32: #space key
             fighter.shot(stdscr, space_management)
         i+=1
-        i=i%1000000
-        time_to_die(stdscr, fighter._bullets, i%100000)
-        flag, right=move_enemies(enemieswin, enemies, flag, right, i)
+        i=i%500000
+        time_to_die(stdscr, fighter._bullets, i%50000)
+        flag, right=move_enemies(enemieswin, list(allenemies.values()), flag, right, i)
         stdscr.addstr(0, 0, "yikes score")
         stdscr.refresh()

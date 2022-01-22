@@ -47,16 +47,16 @@ def draw_object(scr, obj, cordinates, color, center=False):
     return mock_hitbox
 
 
-# def clear_object(stdscr, body, cordinates):
-#     body
-#     body_ls = body.splitlines(True)
-#     i = 0
-#     y, x = cordinates
-#     for line in body_ls:
-#         line = len(line)*' '
-#         stdscr.addstr(y+i, x, line)
-#         i += 1
-#     return True
+def objclear(obj):
+    body = obj.body()
+    y, x = obj.keys_mock_hitbox()[0]
+    body_ls = body.splitlines()
+    i = 0
+    for line in body_ls:
+        line = len(line)*' '
+        obj.scr().addstr(y+i, x, line)
+        i += 1
+    return True
 
 
 def move_obj_yx(obj, down=None, right=None, distance=1):
@@ -78,11 +78,14 @@ def move_obj_yx(obj, down=None, right=None, distance=1):
 def time_to_die(scr, bullets, running, distance=1): #function which move bullets
     if running == 0:
         for bullet in bullets:
+            sm = bullet.space_management()
             y, x = bullet.keys_hitbox()[0]
             body = bullet.vals_hitbox()[0][1]
             if y<=0:
                 bullets.remove(bullet)
-            elif (y, x) in list(bullet.space_management().keys()):
+            elif (y, x) in sm.keys():
+                obj = sm[(y, x)][0]
+                obj.remove()
                 bullets.remove(bullet)
                 bullet.new_assigment_sm(delate={(y, x): None})
             else:
@@ -91,26 +94,41 @@ def time_to_die(scr, bullets, running, distance=1): #function which move bullets
             scr.addstr(y, x, ' ')
             scr.refresh()
 
-def move_enemies(scr, enemies, flag, right, i):
+def move_enemies(scr, allenemies, flag, right, i):
     if i == 0:
         y, x = scr.getmaxyx()
-        y0, x0 = enemies[0][0].keys_hitbox()[0]
-        y1, x1 = enemies[-1][-1].keys_hitbox()[-1]
-        scr.clear()
-        for row in enemies:
-            for enemy in row:
-                if flag==False:
-                    if x1>x:
-                        move_obj_yx(enemy, down=True)
-                        right=False
-                        flag==True
-                    elif x0<0:
-                        move_obj_yx(enemy, down=True)
-                        right=True
-                        flag==True
-                    else:
-                        move_obj_yx(enemy, right=right)
-                elif flag==True:
+        last_x = 0
+        first_x = x
+
+        for enemy in allenemies:
+            x0 = enemy.keys_mock_hitbox()[0][1]
+            x1 = enemy.keys_mock_hitbox()[-1][1]
+            if first_x > x0:
+                first_x = x0
+            if last_x < x1:
+                last_x = x1
+
+        enemies = allenemies.copy()
+        enemies.reverse()
+
+        if flag==False:
+            for enemy in enemies:
+                if last_x>=x-1:
+                    objclear(enemy)
+                    move_obj_yx(enemy, down=True)
+                    right=False
+                    flag=True
+                elif first_x<=1:
+                    objclear(enemy)
+                    move_obj_yx(enemy, down=True)
+                    right=True
+                    flag=True
+                else:
+                    objclear(enemy)
                     move_obj_yx(enemy, right=right)
-                    flag=False
+        elif flag==True:
+            for enemy in enemies:
+                objclear(enemy)
+                move_obj_yx(enemy, right=right)
+                flag=False
     return flag, right

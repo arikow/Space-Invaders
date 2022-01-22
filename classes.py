@@ -1,5 +1,5 @@
 import curses, time
-from screen_logic import draw_object, move_obj_yx
+from screen_logic import draw_object, move_obj_yx, objclear
 
 def colors():
     curses.init_pair(2, curses.COLOR_GREEN, -1)
@@ -27,10 +27,14 @@ class PhysicalObject:
     def new_assigment_sm(self, add=False, delate=False):
         if isinstance(delate, dict):
             for cord in delate.keys():
-                self._space_management.pop(cord)
+                if cord in self.space_management().keys():
+                    self._space_management.pop(cord)
 
         if isinstance(add, dict):
             self._space_management.update(add)
+
+    def remove(self):
+        pass
 
     def hitbox(self):
         return self._hitbox
@@ -129,6 +133,7 @@ class Spaceship(PhysicalObject):
         return self._bullets
 
     def draw(self, cordinates):
+        self.scr().clear()
         self._mock_hitbox = draw_object(self.scr(), self, cordinates, self.color, True)
         self.update_true_hitbox()
         return True
@@ -142,7 +147,26 @@ class Spaceship(PhysicalObject):
 
 
 class Enemy(Spaceship):
-    pass
+    def __init__(self, scr, space_management, lifes, body, allenemies, index):
+        super().__init__(scr, space_management, lifes, body)
+        self._allenemies=allenemies
+        self._index = index
+        self._allenemies[index] = self
+
+    def allenemies(self):
+        return self._allenemies
+
+    def index(self):
+        return self._index
+
+    def draw(self, cordinates):
+        y, x = cordinates
+        self._mock_hitbox = draw_object(self.scr(), self, cordinates, self.color, True)
+        self.update_true_hitbox()
+        return True
+
+    def remove(self):
+        self._allenemies.pop(self.index())
 
 class Bullet(PhysicalObject):
     def __init__(self, scr, space_management, cordinates, endurance=1, body='|'):
