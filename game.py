@@ -81,25 +81,30 @@ def endgame(stdscr, score):
             box.edit()
             nickname = box.gather()
             save_score(nickname, score)
-            return
 
 
 def play(stdscr):
     space_management = {}
     bullets = []
     score = 0
-    enemy_speed=5000
+    enemy_speed=100000
     flag0, flag1, flag2 = False, False, False
     key = start_screen(stdscr)
     stdscr.nodelay(True)
     fighter= generate_spaceship(stdscr, space_management, bullets)
     generate_shilds(stdscr, 5, space_management)
-    enemieswin, allenemies= generate_enemies(stdscr, space_management, bullets)
+    enemieswin, allenemies = generate_enemies(stdscr, space_management, bullets)
     i=0
     flag_endgame = False
     flag=False
     right=True
     while key!=27 and fighter.endurance() > 0 and flag_endgame==False:
+        dict_enemies = list(allenemies.values())
+        enemies = []
+        for dict in dict_enemies:
+            enemies.extend(list(dict.values()))
+        if len(enemies) == 0:
+            flag_endgame=True
         key = stdscr.getch()
         if key == curses.KEY_RIGHT:
             fighter.move_right()
@@ -109,18 +114,19 @@ def play(stdscr):
             fighter.shot(stdscr)
         i+=1
         i=i%100000
-        if len(allenemies) < 40 and not flag0:
-            enemy_speed -= 100000
+        speed = i%enemy_speed
+        if len(enemies) < 40 and not flag0:
+            enemy_speed -= 50000
             flag0 = True
-        if len(allenemies) < 20 and not flag1:
-                enemy_speed -= 200000
-                flag1 = True
-        if len(allenemies) < 2 and not flag2:
-                    enemy_speed -= 200000
-                    flag2 = True
+        if len(enemies) < 20 and not flag1:
+            enemy_speed -= 25000
+            flag1 = True
+        if len(enemies) < 2 and not flag2:
+            enemy_speed -= 20000
+            flag2 = True
         score = time_to_die(stdscr, bullets, score, i%10000)
-        flag, right = move_enemies(enemieswin, list(allenemies.values()), flag, right, i%10000)
-        front_row = random_enemy_shot(stdscr, list(allenemies.values()), 10)
+        flag, right = move_enemies(enemieswin, dict_enemies, flag, right, speed)
+        front_row = random_enemy_shot(stdscr, dict_enemies, 10)
         flag_endgame = check_endgame(front_row, flag_endgame)
         stdscr.addstr(0, 0, f"Score: {score}")
         stdscr.attron(colors()[0])

@@ -109,7 +109,6 @@ def time_to_die(scr, bullets, score, running, distance=1): #function which move 
     return score
 
 def move_enemies(scr, allenemies, flag, right, i):
-    counter = 0
     if i == 0:
         y, x = scr.getmaxyx()
         last_x = 0
