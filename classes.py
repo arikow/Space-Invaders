@@ -5,11 +5,12 @@ def colors():
     curses.init_pair(2, curses.COLOR_GREEN, -1)
     curses.init_pair(3, curses.COLOR_BLUE, -1)
     curses.init_pair(4, curses.COLOR_WHITE, -1)
-    return [curses.color_pair(i) for i in range(2,5)]
+    curses.init_pair(5, curses.COLOR_RED, -1)
+    return [curses.color_pair(i) for i in range(2,6)]
 
 class InvalidSpaceManagment(Exception):
     def __init__(self):
-        super().__init__("Some hitobxes aren't cover or imaginary hitboxes exsit (number of hitobxes doesn't match)")
+        super().__init__("Some hitobxes aren't cover or imaginary hitboxes exist (number of hitobxes doesn't match)")
 
 
 class PhysicalObject:
@@ -159,6 +160,7 @@ class Enemy(Spaceship):
         self._allenemies=allenemies
         self._index = (column, row) # diffrent tuple than others -> (x, y)
         self._allenemies[column][row] = self
+        self._game = True
 
     def allenemies(self):
         return self._allenemies
@@ -175,6 +177,9 @@ class Enemy(Spaceship):
     def remove(self):
         x, y = self.index()
         self._allenemies[x].pop(y)
+
+    def move_right(self, direction=True):
+        falg = move_obj_yx(self, right=direction)
 
 
 class Bullet(PhysicalObject):
@@ -199,3 +204,4 @@ class Bullet(PhysicalObject):
         else:
             y += distance
         self._hitbox[(y ,x)] = val
+

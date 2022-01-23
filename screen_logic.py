@@ -26,6 +26,7 @@ def place_symetrically(y, x, amount, ycentric=False, xcentric=True, width=1, hei
 
 def draw_object(scr, obj, cordinates, color, center=False):
     body = obj.body()
+
     mock_hitbox = {}
     if body[-1] == '\n':
         body = body[:-1]
@@ -62,14 +63,18 @@ def objclear(obj):
 def move_obj_yx(obj, down=None, right=None, distance=1):
     index = len(obj.keys_mock_hitbox())//2
     y, x = obj.keys_mock_hitbox()[index]
-    if down==True:
+    scr = obj.scr()
+    maxy, maxx = scr.getmaxyx()
+    if maxy == 1:
+        maxx -= 1
+    if down==True and y+distance < maxy-1:
         y += distance
-    elif down==False:
+    elif down==False and y-distance > 0:
         y -= distance
 
-    if right==True:
+    if right==True and obj.keys_mock_hitbox()[-1][1] < maxx-1:
         x += distance
-    elif right==False:
+    elif right==False and obj.keys_mock_hitbox()[0][1] > 0:
         x -= distance
 
     obj.draw((y,x))
@@ -104,6 +109,7 @@ def time_to_die(scr, bullets, score, running, distance=1): #function which move 
     return score
 
 def move_enemies(scr, allenemies, flag, right, i):
+    counter = 0
     if i == 0:
         y, x = scr.getmaxyx()
         last_x = 0
@@ -155,3 +161,13 @@ def random_enemy_shot(scr, columns, intense):
     if random.randint(0, 100000000) < intense:
         enemy = random.choice(front_row)
         enemy.shot(scr, direction=False)
+        return front_row
+
+
+def check_endgame(front_row, endgame):
+#
+#     for enemy in front_row:
+#         y, x = enemy.scr().getmaxyx()
+#         if enemy.mock_hitbox[-1] == (y-1, x-1):
+#             endgame=True
+    return endgame
