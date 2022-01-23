@@ -161,13 +161,12 @@ def random_enemy_shot(scr, columns, intense):
     if random.randint(0, 100000000) < intense:
         enemy = random.choice(front_row)
         enemy.shot(scr, direction=False)
-        return front_row
+    return front_row
 
 
 def check_endgame(front_row, endgame):
-#
-#     for enemy in front_row:
-#         y, x = enemy.scr().getmaxyx()
-#         if enemy.mock_hitbox[-1] == (y-1, x-1):
-#             endgame=True
+    for enemy in front_row:
+        y, x = enemy.scr().getmaxyx()
+        if enemy.keys_mock_hitbox()[-1] == (y-2, x-1):
+           endgame=True
     return endgame
