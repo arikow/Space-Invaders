@@ -1,6 +1,5 @@
 import curses
 from game import play
-from screen_logic import *
 from model_io import load_scoreboard, clear_scoreboard, read_readme
 
 
@@ -30,7 +29,9 @@ def menu(stdscr, select):
 
     while key != 10:
 
-        midy, midx = get_middle_scr(stdscr)
+        y, x = stdscr.getmaxyx()
+        y //= 2
+        x //= 2
 
         stdscr.erase()
 
@@ -38,15 +39,15 @@ def menu(stdscr, select):
             if position_idx == select.index(word):
                 stdscr.attron(curses.color_pair(1))
                 stdscr.addstr(
-                    midy - len(select) // 2 + select.index(word),
-                    midx - len(word) // 2,
+                    y - len(select) // 2 + select.index(word),
+                    x - len(word) // 2,
                     word,
                 )
                 stdscr.attroff(curses.color_pair(1))
             else:
                 stdscr.addstr(
-                    midy - len(select) // 2 + select.index(word),
-                    midx - len(word) // 2,
+                    y - len(select) // 2 + select.index(word),
+                    x - len(word) // 2,
                     word,
                 )
 
