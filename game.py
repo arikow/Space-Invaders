@@ -3,7 +3,7 @@ from curses.textpad import Textbox
 from screen_logic import get_middle_scr, place_symetrically, time_to_die, move_enemies, random_enemy_shot, check_endgame
 from classes import *
 from model_io import save_score
-from time import sleep
+from time import sleep, time
 
 def start_screen(stdscr):
     midy, midx = get_middle_scr(stdscr)
@@ -87,17 +87,20 @@ def play(stdscr):
     space_management = {}
     bullets = []
     score = 0
-    enemy_speed=100000
+    enemies_speed = 3
     flag0, flag1, flag2 = False, False, False
     key = start_screen(stdscr)
     stdscr.nodelay(True)
     fighter= generate_spaceship(stdscr, space_management, bullets)
     generate_shilds(stdscr, 5, space_management)
     enemieswin, allenemies = generate_enemies(stdscr, space_management, bullets)
-    i=0
     flag_endgame = False
-    flag=False
+    flag_run_bullets = False
+    flag_run_enemies = True
+    flag_direction=False
     right=True
+    start_time_bullet = time()
+    start_time_enemies = time()
     while key!=27 and fighter.endurance() > 0 and flag_endgame==False:
         dict_enemies = list(allenemies.values())
         enemies = []
@@ -112,25 +115,33 @@ def play(stdscr):
             fighter.move_right(False)
         elif key == 32: #space key
             fighter.shot(stdscr)
-        i+=1
-        i=i%100000
-        speed = i%enemy_speed
+        if time() - start_time_bullet > 0.08:
+            start_time_bullet = time()
+            flag_run_bullets = True
+        else:
+            flag_run_bullets = False
+        if time() - start_time_enemies > enemies_speed:
+            start_time_enemies = time()
+            flag_run_enemies = True
+        else:
+            flag_run_enemies = False
         if len(enemies) < 40 and not flag0:
-            enemy_speed -= 50000
+            enemies_speed /= 2
             flag0 = True
         if len(enemies) < 20 and not flag1:
-            enemy_speed -= 25000
+            enemies_speed /= 4
             flag1 = True
         if len(enemies) < 2 and not flag2:
-            enemy_speed -= 20000
+            enemies_speed /= 10
             flag2 = True
-        score = time_to_die(stdscr, bullets, score, i%10000)
-        flag, right = move_enemies(enemieswin, dict_enemies, flag, right, speed)
+        score = time_to_die(stdscr, bullets, score, flag_run_bullets)
+        flag_direction, right = move_enemies(enemieswin, dict_enemies, flag_direction, right, flag_run_enemies)
         front_row = random_enemy_shot(stdscr, dict_enemies, 10)
         flag_endgame = check_endgame(front_row, flag_endgame)
         stdscr.addstr(0, 0, f"Score: {score}")
         stdscr.attron(colors()[0])
         stdscr.addstr(1, 0, f"Lifes: {fighter.endurance()}")
         stdscr.attroff(colors()[0])
+        sleep(0.005)
         stdscr.refresh()
     endgame(stdscr, score)

@@ -80,8 +80,8 @@ def move_obj_yx(obj, down=None, right=None, distance=1):
     obj.draw((y,x))
 
 
-def time_to_die(scr, bullets, score, running, distance=1): #function which move bullets
-    if running == 0:
+def time_to_die(scr, bullets, score, run, distance=1): #function which move bullets
+    if run:
         for bullet in bullets:
             sm = bullet.space_management()
             y, x = bullet.keys_hitbox()[0]
@@ -108,8 +108,8 @@ def time_to_die(scr, bullets, score, running, distance=1): #function which move 
             scr.refresh()
     return score
 
-def move_enemies(scr, allenemies, flag, right, i):
-    if i == 0:
+def move_enemies(scr, allenemies, flag, right, run):
+    if run:
         y, x = scr.getmaxyx()
         last_x = 0
         first_x = x
@@ -151,7 +151,7 @@ def move_enemies(scr, allenemies, flag, right, i):
 
 
 def random_enemy_shot(scr, columns, intense):
-    intense *= 10
+    intense *= 10000
     front_row = []
     for column in columns:
         if column:
