@@ -71,7 +71,7 @@ def endgame(stdscr, score):
     stdscr.addstr(midy+1, 10, f'YOUR SCORE: {score}')
     stdscr.refresh()
     key = 0
-    while key != 27:
+    while key != 27 or key == 10:
         key = stdscr.getch()
         if key == 115 or key == 83:
             textwin = curses.newwin(1, 20, midy+2, 31)
@@ -81,6 +81,7 @@ def endgame(stdscr, score):
             box.edit()
             nickname = box.gather()
             save_score(nickname, score)
+            return
 
 
 def play(stdscr):
@@ -136,7 +137,7 @@ def play(stdscr):
             flag2 = True
         score = time_to_die(stdscr, bullets, score, flag_run_bullets)
         flag_direction, right = move_enemies(enemieswin, dict_enemies, flag_direction, right, flag_run_enemies)
-        front_row = random_enemy_shot(stdscr, dict_enemies, 10)
+        front_row = random_enemy_shot(stdscr, dict_enemies, 50) #last argument determine intense of shooting
         flag_endgame = check_endgame(front_row, flag_endgame)
         stdscr.addstr(0, 0, f"Score: {score}")
         stdscr.attron(colors()[0])
