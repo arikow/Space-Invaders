@@ -33,20 +33,21 @@ class MockScreen:
 
 term = MockScreen((24, 80))
 fighterwin = MockScreen((24, 80), 73, 0)
+sm = {}
 
 
 @pytest.fixture
 def shields(params=term):
     return [
-        Shield(term, 0, (0, 9), 1),
-        Shield(term, 1, (0, 9), 1),
-        Shield(term, 2, (0, 23), 1),
-        Shield(term, 3, (0, 37), 1),
-        Shield(term, 4, (0, 51), 1),
-        Shield(term, 5, (0, 64), 1),
-        Shield(term, 6, (0, 78), 1),
-        Shield(term, 7, (0, 78), 1),
-        Shield(term, 8, (0, 78), 1),
+        Shield(term, sm, 0, (0, 9), color=1),
+        Shield(term, sm, 1, (0, 9), color=1),
+        Shield(term, sm, 2, (0, 23), color=1),
+        Shield(term, sm, 3, (0, 37), color=1),
+        Shield(term, sm, 4, (0, 51), color=1),
+        Shield(term, sm, 5, (0, 64), color=1),
+        Shield(term, sm, 6, (0, 78), color=1),
+        Shield(term, sm, 7, (0, 78), color=1),
+        Shield(term, sm, 8, (0, 78), color=1),
     ]
 
 

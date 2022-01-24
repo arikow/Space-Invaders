@@ -1,5 +1,6 @@
-import curses
 from screen_logic import draw_object, move_obj_yx
+
+import curses
 
 
 def colors():
