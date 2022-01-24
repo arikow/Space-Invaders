@@ -1,19 +1,19 @@
 import pytest
-from classes import *
+from classes import Spaceship, Shield
 from t_data import shields_body_ex, shields_hitbox_ex
 
 
-class Mock_Screen:
+class MockScreen:
     def __init__(self, size, y=0, x=0):
         self._begyx = y, x
         self._size = size
         self.content = {}
 
     def addstr(self, y, x, text):
-        if x in range(0, x+1) and y in range(0, y+1):
-            self.content[(y,x)] = text
+        if x in range(0, x + 1) and y in range(0, y + 1):
+            self.content[(y, x)] = text
         else:
-            raise IndexError('Write in screen')
+            raise IndexError("Not in screen")
 
     def getmaxyx(self):
         return self._size
@@ -30,8 +30,10 @@ class Mock_Screen:
     def attroff(self, *args):
         pass
 
-term = Mock_Screen((24, 80))
-win =Mock_Screen((24, 80), 73, 0)
+
+term = MockScreen((24, 80))
+fighterwin = MockScreen((24, 80), 73, 0)
+
 
 @pytest.fixture
 def shields(params=term):
@@ -44,15 +46,13 @@ def shields(params=term):
         Shield(term, 5, (0, 64), 1),
         Shield(term, 6, (0, 78), 1),
         Shield(term, 7, (0, 78), 1),
-        Shield(term, 8, (0, 78), 1)
+        Shield(term, 8, (0, 78), 1),
     ]
 
 
 @pytest.fixture
 def spaceships():
-    return [
-        Spaceship(term, 3, '|o|')
-    ]
+    return [Spaceship(term, 3, "|o|")]
 
 
 def test_shield_init(shields):
@@ -64,9 +64,12 @@ def test_shield_init(shields):
     assert shields[0].body() == shields_body_ex[0]
 
 
-@pytest.mark.parametrize("num, body", [(nr, shields_body_ex[nr]) for nr in range(1, 9)])
+@pytest.mark.parametrize(
+    "num, body", [(nr, shields_body_ex[nr]) for nr in range(1, 9)]
+)
 def test_shields_body_creator(shields, num, body):
-    assert '\n'+shields[num].body() == body
+    assert "\n" + shields[num].body() == body
+
 
 def test_shield_hitbox(shields):
     s = shields[4]
