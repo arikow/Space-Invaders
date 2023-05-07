@@ -1,6 +1,7 @@
 # Space Invaders
 
 This project was created in order to pass programming course in the first semester of Computer Science studies.
+It is modified concept of game space invaders. You have to control your starship with left/right arrows to doge enemy bullets and use space to shot.
 
 ## Screenshots from game:
 
