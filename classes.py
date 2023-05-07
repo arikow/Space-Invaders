@@ -45,7 +45,7 @@ class PhysicalObject:
 
     def new_assigment_sm(self, add=False, delate=False):
         """
-        Metoda usuwająca/dodawąca pozycje w space management w zależnosćic o parametru do którego zostanie przekazany hitbox do usunięcia.
+        Metoda usuwająca/dodająca pozycje w space management w zależnosćic o parametru do którego zostanie przekazany hitbox do usunięcia.
         """
         if isinstance(delate, dict):
             for cord in delate.keys():
@@ -127,7 +127,7 @@ class Shield(PhysicalObject):
 
     def __eq__(self, other):
         """
-        Potrzebne do testowania obiektu.
+        Potrzebne do testowania obiektu. (nie zrealizowano)
         """
         return ("Shield", self.cordinates(), self.endurance()) == other
 
