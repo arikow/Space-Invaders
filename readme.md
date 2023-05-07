@@ -1,6 +1,6 @@
 # Space Invaders
 
-This project was created in order to pass programming course in the first semester of Computer Sience studies.
+This project was created in order to pass programming course in the first semester of Computer Science studies.
 
 ## Screenshots from game:
 
